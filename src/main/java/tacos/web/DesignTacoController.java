@@ -17,6 +17,8 @@ import tacos.Ingredient.Type;
 import tacos.Order;
 import tacos.Taco;
 import tacos.data.IngredientRepository;
+import tacos.data.JpaIngredientRepository;
+import tacos.data.JpaTacoRepository;
 import tacos.data.TacoRepository;
 
 import javax.validation.Valid;
@@ -39,18 +41,27 @@ public class DesignTacoController {
 
     private final IngredientRepository ingredientRepository;
 
+    private final JpaIngredientRepository jpaIngredientRepository;
+
     private TacoRepository tacoRepository;
 
+    private final JpaTacoRepository jpaTacoRepository;
+
     @Autowired
-    public DesignTacoController(IngredientRepository ingredientRepository, TacoRepository tacoRepository) {
+    public DesignTacoController(IngredientRepository ingredientRepository, TacoRepository tacoRepository,
+                                JpaIngredientRepository jpaIngredientRepository, JpaTacoRepository jpaTacoRepository) {
         this.ingredientRepository = ingredientRepository;
         this.tacoRepository = tacoRepository;
+        this.jpaIngredientRepository = jpaIngredientRepository;
+        this.jpaTacoRepository = jpaTacoRepository;
     }
 
     @GetMapping
     public String showDesignForm(Model model) {
         List<Ingredient> ingredients = new ArrayList<>();
-        ingredientRepository.findAll().forEach(ingredient -> ingredients.add(ingredient));
+//        ingredientRepository.findAll().forEach(ingredient -> ingredients.add(ingredient));
+        jpaIngredientRepository.findAll().forEach(ingredient -> ingredients.add(ingredient));
+        log.info("Loading ingredients from DB: " + ingredients.size());
         Type[] types = Ingredient.Type.values();
         for (Type type : types) {
             model.addAttribute(type.toString().toLowerCase(), filterByType(ingredients, type));
@@ -70,7 +81,9 @@ public class DesignTacoController {
             return "design";
         }
 
-        Taco saved = tacoRepository.save(design);
+//        Taco saved = tacoRepository.save(design);
+        log.info("Taco: " + design.toString());
+        Taco saved = jpaTacoRepository.save(design);
         order.addDesign(saved);
 
         return "redirect:/orders/current";

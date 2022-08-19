@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import tacos.Order;
+import tacos.data.JpaOrderRepository;
 import tacos.data.OrderRepository;
 
 import javax.validation.Valid;
@@ -23,9 +24,12 @@ public class OrderController {
 
     private OrderRepository orderRepository;
 
+    private JpaOrderRepository jpaOrderRepository;
+
     @Autowired
-    public OrderController(OrderRepository orderRepository) {
+    public OrderController(OrderRepository orderRepository, JpaOrderRepository jpaOrderRepository) {
         this.orderRepository = orderRepository;
+        this.jpaOrderRepository = jpaOrderRepository;
     }
 
     @GetMapping("/current")
@@ -38,7 +42,9 @@ public class OrderController {
         if (errors.hasErrors()) {
             return "orderForm";
         }
-        orderRepository.save(order);
+//        orderRepository.save(order);
+        log.info("Order: " + order.toString());
+        jpaOrderRepository.save(order);
         sessionStatus.setComplete();
         return "redirect:/";
     }

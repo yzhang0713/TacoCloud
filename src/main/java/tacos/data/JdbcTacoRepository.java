@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import tacos.Ingredient;
 import tacos.Taco;
 
 import java.sql.Timestamp;
@@ -30,9 +31,12 @@ public class JdbcTacoRepository implements TacoRepository {
     public Taco save(Taco taco) {
         long tacoId = saveTacoInfo(taco);
         taco.setId(tacoId);
-        for (String ingredientId : taco.getIngredients()) {
-            saveIngredientToTaco(ingredientId, tacoId);
+        for (Ingredient ingredient : taco.getIngredients()) {
+            saveIngredientToTaco(ingredient.getId(), tacoId);
         }
+//        for (String ingredientId : taco.getIngredients()) {
+//            saveIngredientToTaco(ingredientId, tacoId);
+//        }
         return taco;
     }
 
