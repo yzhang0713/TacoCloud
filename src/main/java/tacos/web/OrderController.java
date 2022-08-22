@@ -2,6 +2,7 @@ package tacos.web;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import tacos.Order;
+import tacos.User;
 import tacos.data.JpaOrderRepository;
 import tacos.data.OrderRepository;
 
@@ -38,12 +40,12 @@ public class OrderController {
     }
 
     @PostMapping
-    public String processOrder(@Valid Order order, Errors errors, SessionStatus sessionStatus) {
+    public String processOrder(@Valid Order order, Errors errors, SessionStatus sessionStatus, @AuthenticationPrincipal User user) {
         if (errors.hasErrors()) {
             return "orderForm";
         }
-//        orderRepository.save(order);
-        log.info("Order: " + order.toString());
+
+        order.setUser(user);
         jpaOrderRepository.save(order);
         sessionStatus.setComplete();
         return "redirect:/";

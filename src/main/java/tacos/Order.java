@@ -41,6 +41,8 @@ public class Order implements Serializable {
     private String ccCVV;
     @ManyToMany(targetEntity=Taco.class)
     private List<Taco> tacos;
+    @ManyToOne
+    private User user;
 
     public void addDesign(Taco taco) {
         if (this.tacos == null) {
